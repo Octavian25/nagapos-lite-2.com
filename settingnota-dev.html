@@ -173,6 +173,11 @@ box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1
         <option value="nota_sumba_riau.jpeg">Sumba Riau</option>
         <option value="nota_kenaga.jpeg">Kenaga</option>
         <option value="nota_lestari.jpg">Lestari</option>
+        <option value="nota_sumber_urip.jpeg">Sumber Urip</option>
+        <option value="nota_syamGold.jpeg">Syam</option>
+        <option value="nota_murni.jpeg">Murni</option>
+        <option value="ciputajaya.jpeg">Ciputajaya</option>
+        <option value="nota_galery-silver.jpeg">Galery Silver</option>
       </select> 
      
     </div>
@@ -213,10 +218,10 @@ box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1
           </div>
         </div>
         <div class="col-lg-12">
-          <button id="kembali" class="btn btn-warning mt-3 mb-3 mr-3">
+          <!-- <button id="kembali" class="btn btn-warning mt-3 mb-3 mr-3">
             <i class="fa fa-chevron-left mr-2"></i>
             Kembali
-          </button>
+          </button> -->
           <button id="tambah_text" class="btn btn-primary mt-3 mb-3">
             Edit Data
           </button>
@@ -236,11 +241,15 @@ box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1
  
 </body>
 <script>
-  let base_url = "http://192.168.1.20:3001/api/v1/"
+  //Sumber Urip "http://147.139.193.169:3115/api/v1/"
+  //SyamGold = "http://147.139.182.75:3117/api/v1/"
+  // let base_url = "https://147.139.193.169:3119/api/v1/"
+  let url = "http://147.139.193.169:4001/api/v1/"
+  let base_url = url.replaceAll('"','')
   $(document).ready(function () {
     $.ajax({
       type: "GET",
-      url: base_url + 'nota/get/new',
+      url: url + 'nota/get/new',
       headers: { "x-auth-token": localStorage.getItem('token'), "Content-Type": "application/json" },
       success: function (data, textStatus, xhr) {
         // console.log(data);
@@ -287,7 +296,7 @@ element.onchange = function() {
           status: true,
           width: width
         }
-        console.log(row);
+        // console.log(row);
         element = row
       }
       return element;
@@ -506,43 +515,71 @@ element.onchange = function() {
   }
 </script>
 <script>
-  $(document).ready(function () {
+  $(document).ready(  function () {
 
-    $("#simpan").click(function () {
+    $("#simpan").click(async function () {
       let data_post = JSON.parse(localStorage.getItem("list_component")) || [];
       let row = {
         nota: JSON.parse(localStorage.getItem("list_component")) || [],
       };
       var hasil = JSON.stringify(row)
       $('#loading').show();
-      $.ajax({
-        type: "POST",
-        url: base_url + 'nota/add',
-        headers: { "x-auth-token": localStorage.getItem('token'), "Content-Type": "application/json" },
-        data: hasil,
-        success: function (data, textStatus, xhr) {
-          // console.log(hasil);
-          $('#loading').hide();
-          if (xhr.status == 200) {
-            Swal.fire({
+      let listUrl = ["http://147.139.193.169:4001/api/v1/", "http://147.139.193.169:4003/api/v1/", "http://147.139.193.169:4005/api/v1/", "http://147.139.193.169:4007/api/v1/", "http://147.139.193.169:4009/api/v1/"];
+      try {
+        for(const url of listUrl){
+       await postData(url, hasil)
+      }
+      Swal.fire({
               title: "BERHASIL",
-              text: "Faktur Sudah Terupdate",
+              text: "Faktur BERHASIL",
               icon: 'success',
             })
-          } else {
-            Swal.fire({
+            $('#loading').hide();
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
               title: "GAGAL",
-              text: "Faktur Gagal Terupdate",
+              text: "Faktur Gagal Disimpan",
               icon: 'error',
             })
             $('#loading').hide();
-          }
-        },
-        error: function(xhr, textStatus, errorThrown) {
-          $('#loading').hide();
-        }
-      })
+      }
+      // $.ajax({
+      //   type: "POST",
+      //   url: base_url + 'nota/add',
+      //   headers: { "x-auth-token": "HoshinCorpsGallerySilver", "Content-Type": "application/json" },
+      //   data: hasil,
+      //   success: function (data, textStatus, xhr) {
+      //     // console.log(hasil);
+      //     $('#loading').hide();
+      //     if (xhr.status == 200) {
+           
+      //     } else {
+      //       Swal.fire({
+      //         title: "GAGAL",
+      //         text: "Faktur Gagal Terupdate",
+      //         icon: 'error',
+      //       })
+      //       $('#loading').hide();
+      //     }
+      //   },
+      //   error: function(xhr, textStatus, errorThrown) {
+      //     $('#loading').hide();
+      //   }
+      // }) 
     });
+    async function postData(url, data){
+      const response = await fetch(url + "nota/add", {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'x-auth-token': "HoshinCorpsGallerySilver",
+          "Content-Type": "application/json"
+        },
+        body: data
+      });
+      return response.json();
+    }
   });
 </script>
 <script>
